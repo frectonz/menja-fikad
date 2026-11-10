@@ -1,0 +1,115 @@
+{
+  "id": "/",
+  "name": "Menja Fikad",
+  "short_name": "Menja Fikad",
+  "description": "Timed practice quizzes for the driving licence theory test, in Amharic and English.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eceff2",
+  "theme_color": "#0b51a3",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/wide-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Home with your scores"
+    },
+    {
+      "src": "/screenshots/wide-topics.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Practise one topic at a time"
+    },
+    {
+      "src": "/screenshots/wide-quiz.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "A question with the clock and your pace"
+    },
+    {
+      "src": "/screenshots/wide-correct.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Right answers are explained"
+    },
+    {
+      "src": "/screenshots/wide-wrong.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Wrong answers show the correct one and why"
+    },
+    {
+      "src": "/screenshots/wide-results.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Results with score by topic"
+    },
+    {
+      "src": "/screenshots/narrow-home.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home with your scores"
+    },
+    {
+      "src": "/screenshots/narrow-topics.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Practise one topic at a time"
+    },
+    {
+      "src": "/screenshots/narrow-quiz.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "A question with the clock and your pace"
+    },
+    {
+      "src": "/screenshots/narrow-correct.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Right answers are explained"
+    },
+    {
+      "src": "/screenshots/narrow-wrong.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Wrong answers show the correct one and why"
+    },
+    {
+      "src": "/screenshots/narrow-results.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Results with score by topic"
+    }
+  ]
+}

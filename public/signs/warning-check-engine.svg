@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="28" fill="#20242a"/>
+  <g fill="none" stroke="#f7a600" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M56 70h20V56h40v14h20l14 16h14V76h10v48h-10v-10h-14v18H82L66 116H56z"/>
+    <path d="M80 44h32M40 78v30M40 93h16"/>
+  </g>
+  <text x="100" y="176" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="30" letter-spacing="2" fill="#f7a600">CHECK</text>
+</svg>

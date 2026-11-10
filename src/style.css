@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", "Noto Sans Ethiopic", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #3c3c3c;
+  --color-mute: #777777;
+  --color-edge: #d6dbe1;
+  --color-snow: #f3f5f7;
+  --color-ground: #eceff2;
+  --color-road: #3b3f45;
+  --color-plate: #0b51a3;
+  --color-plate-dark: #083c7a;
+  --color-leaf: #1f9d55;
+  --color-leaf-dark: #157a41;
+  --color-mint: #ddf3e5;
+  --color-cherry: #d63c3c;
+  --color-cherry-dark: #b12a2a;
+  --color-blush: #fbe3e3;
+  --color-sun: #ffc21a;
+  --color-sun-dark: #d49600;
+}
+
+@media (min-width: 64rem) {
+  html {
+    /* The whole layout is in rem, so it scales with the window: capped by height so a
+       question always fits on screen, and by width so huge monitors stay readable. */
+    font-size: clamp(12px, min(0.45vw + 10px, 2vh), 30px);
+  }
+}
+
+button:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
+.road-dashes {
+  background: repeating-linear-gradient(90deg, #fff 0 1.25rem, transparent 1.25rem 2.5rem) center / 100% 2px no-repeat;
+}

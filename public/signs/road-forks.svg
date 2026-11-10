@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="554.987"
+   height="490.01199"
+   viewBox="0 0 554.98701 490.012"
+   enable-background="new 0 0 566.93 566.93"
+   xml:space="preserve"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="ZZ1.svg"><metadata
+   id="metadata33"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs31" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1280"
+   inkscape:window-height="1004"
+   id="namedview29"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="0.4603743"
+   inkscape:cx="277.50725"
+   inkscape:cy="251.737"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g7" />
+<g
+   id="g3"
+   transform="translate(-5.95775,-45.19)">
+	<polyline
+   clip-rule="evenodd"
+   points="122.898,503.864 38.578,503.864 283.112,80.123    526.092,503.864 122.898,503.864  "
+   id="polyline5"
+   style="fill:#ffffff;fill-rule:evenodd;stroke:none" />
+	<g
+   id="g7">
+		<defs
+   id="defs9">
+			<polyline
+   id="SVGID_1_"
+   points="5.957,45.19 5.957,535.202 560.974,535.202 560.974,45.19    " />
+		</defs>
+		<clipPath
+   id="SVGID_2_">
+			<use
+   xlink:href="#SVGID_1_"
+   overflow="visible"
+   id="use13"
+   style="overflow:visible"
+   x="0"
+   y="0"
+   width="566.92999"
+   height="566.92999" />
+		</clipPath>
+		<polyline
+   clip-path="url(#SVGID_2_)"
+   clip-rule="evenodd"
+   points="132.15,507.344     30.745,507.344 282.589,66.971 534.568,507.344 132.15,507.344   "
+   id="polyline15"
+   style="fill:#ffffff;fill-rule:evenodd;stroke:none" />
+		<path
+   clip-path="url(#SVGID_2_)"
+   clip-rule="evenodd"
+   d="m 524.333,535.202 c 13.054,-0.169 25.195,-7.157 31.712,-18.506 6.533,-11.379 6.533,-25.357 0,-36.739 L 315.139,63.49 c -6.583,-11.311 -18.67,-18.3 -31.773,-18.3 -13.104,0 -25.211,6.989 -31.762,18.3 L 10.973,479.957 c -6.687,11.382 -6.687,25.36 0,36.739 6.533,11.349 18.675,18.337 31.743,18.337 l 481.617,0.169 M 64.003,486.037 H 502.845 L 283.5,106.311 64.003,486.037 z"
+   id="path17"
+   style="fill:#db0000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+   inkscape:connector-curvature="0" />
+	</g>
+	<polyline
+   clip-rule="evenodd"
+   points="314.481,344.393 314.481,473.19 258.451,473.19    258.451,381.94 258.451,344.393  "
+   id="polyline19"
+   style="fill:#000000;fill-rule:evenodd;stroke:none" />
+	<polyline
+   clip-rule="evenodd"
+   points="229.178,260.984 298.709,330.516 259.089,370.135    189.558,300.604  "
+   id="polyline21"
+   style="fill:#000000;fill-rule:evenodd;stroke:none" />
+	<polyline
+   clip-rule="evenodd"
+   points="261.03,344.378 344.424,260.984 384.043,300.604    300.649,383.997  "
+   id="polyline23"
+   style="fill:#000000;fill-rule:evenodd;stroke:none" />
+	<path
+   clip-rule="evenodd"
+   d="m 276.227,363.44 -17.775,18.5 c 0,-13.25 -12.516,-24.959 -12.516,-24.959 l 30.291,6.459 z"
+   id="path25"
+   style="fill:#1b1719;fill-rule:evenodd;stroke:none"
+   inkscape:connector-curvature="0" />
+	<path
+   clip-rule="evenodd"
+   d="m 296.563,364.114 17.775,18.5 c 0,-13.25 12.516,-24.959 12.516,-24.959 l -30.291,6.459 z"
+   id="path27"
+   style="fill:#1b1719;fill-rule:evenodd;stroke:none"
+   inkscape:connector-curvature="0" />
+</g>
+</svg>
