@@ -34,7 +34,6 @@
             pkgs.pnpm
             pkgs.nodejs
 
-            pkgs.elmPackages.elm
             pkgs.elmPackages.elm-format
             pkgs.elmPackages.elm-language-server
 
@@ -46,6 +45,10 @@
 
             pkgs.emmet-ls
           ];
+
+          shellHook = ''
+            export PATH="$PWD/node_modules/.bin:$PATH"
+          '';
         };
       });
 

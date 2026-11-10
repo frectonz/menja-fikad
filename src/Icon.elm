@@ -6,9 +6,6 @@ import Svg exposing (Svg, circle, path, rect, svg)
 import Svg.Attributes as A
 
 
-{-| Line icons drawn on a 24 by 24 grid. They take their colour from the text
-colour and their size from the classes passed in.
--}
 icon : List (Svg msg) -> String -> Html msg
 icon shapes classes =
     svg

@@ -42,8 +42,6 @@ async function dropOldBuilds(html) {
   }
 }
 
-// Fetch the live page and, if it is a different build from the cached one,
-// download that whole build so the next launch runs it, online or not.
 async function refreshPage() {
   const cache = await caches.open(CACHE);
   const fresh = await fetch("/", { cache: "no-store" });
@@ -86,7 +84,6 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
 
-  // Page loads: open instantly from the cache and update in the background.
   if (request.mode === "navigate") {
     const refreshed = refreshPage();
     event.waitUntil(refreshed.catch(() => {}));
@@ -100,7 +97,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Everything else: answer from the cache and refresh it in the background.
   const refreshed = revalidate(request);
   event.waitUntil(refreshed.catch(() => {}));
   event.respondWith(fromCache(request).then((hit) => hit ?? refreshed));

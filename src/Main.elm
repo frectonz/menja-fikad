@@ -21,10 +21,6 @@ port save : E.Value -> Cmd msg
 port playSound : String -> Cmd msg
 
 
-
--- MODEL
-
-
 {-| Either we are in the lobby looking at every desk, or we are seated at
 exactly one of them. A seat owns its quiz, so it can never point at a quiz
 that does not exist.
@@ -115,9 +111,6 @@ main =
         }
 
 
-{-| Every full quiz, followed by one practice set per topic made from the
-questions of all quizzes.
--}
 catalog : List Quiz
 catalog =
     Quizzes.all ++ List.filterMap topicSet Quiz.topics
@@ -170,10 +163,6 @@ subscriptions model =
             Sub.none
 
 
-
--- UPDATE
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
@@ -193,8 +182,6 @@ update msg model =
     )
 
 
-{-| A sound for what just changed: an answer going in, or a quiz being finished.
--}
 soundFor : Model -> Model -> Maybe String
 soundFor before after =
     case ( before, after ) of
@@ -384,10 +371,6 @@ desks model =
                 :: seat.after
 
 
-
--- STATS
-
-
 isCorrect : Slot -> Bool
 isCorrect slot =
     slot.picked == Just (Quiz.correctIndex slot.question)
@@ -500,10 +483,6 @@ formatDuration seconds =
 
     else
         String.fromInt seconds ++ "s"
-
-
-
--- STORAGE
 
 
 encode : Model -> E.Value
@@ -655,10 +634,6 @@ slotsDecoder quiz =
             )
 
 
-
--- VIEW
-
-
 view : Model -> Html Msg
 view model =
     case model of
@@ -682,8 +657,6 @@ shell extra children =
     div [ class ("flex min-h-dvh flex-col bg-ground text-ink " ++ extra) ] children
 
 
-{-| The header is drawn like a blue direction sign, with the name on an outlined plate.
--}
 blueBar : List (Html Msg) -> Html Msg
 blueBar extras =
     header [ class "sticky top-0 z-10 bg-plate text-white" ]
@@ -944,10 +917,6 @@ viewExam quiz exam =
         ]
 
 
-{-| Progress drawn as a stretch of road. The green stretch and the dot are how far
-you have got through the questions, and the amber post is how far the clock has
-got through the time, so staying ahead of the post means you will finish in time.
--}
 viewRoad : Int -> Maybe Int -> Html msg
 viewRoad you clockAt =
     div [ class "relative h-5 bg-road" ]
@@ -1099,9 +1068,6 @@ viewOption slot revealed index option =
         ]
 
 
-{-| The bar across the bottom: plain while you are choosing, then green or red
-with the verdict, the explanation and the button to move on.
--}
 viewFooter : Exam -> Zipper Slot -> Html Msg
 viewFooter exam slots =
     let
