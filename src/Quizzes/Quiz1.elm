@@ -802,7 +802,7 @@ quiz =
                     }
           , explanation = "In a left-hand-drive vehicle the driver sits on the left, so the left arm held straight out of the window signals a left turn."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "ተቀጣጣይ ነገሮችን በማሸሽ እሳትን የማጥፋት ዘዴ ———— ይባላል።", en = "Putting out a fire by removing flammable material is called ————." }
           , figure = Nothing
           , answer =
@@ -835,7 +835,7 @@ quiz =
                     }
           , explanation = "The highest speed limit given in the handbook is 100 km/h."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "በሞተር ላይ የሚነሳ እሳት ለማጥፋት የሚያገለግለው፤", en = "To put out an engine fire, use:" }
           , figure = Nothing
           , answer =

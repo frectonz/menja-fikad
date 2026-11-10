@@ -26,7 +26,7 @@ quiz =
         , explanation = "All three are recommended ways to keep yourself from driving aggressively, so none of them is the exception."
         }
     , rest =
-        [ { topic = FireSafety
+        [ { topic = Safety
           , prompt = { am = "ከፈሳሽ ነገሮች የሚነሳ እሳት የ ------ ክፍል እሳት ይባላል።", en = "A fire from liquids is called a Class ___ fire." }
           , figure = Nothing
           , answer =
@@ -477,7 +477,7 @@ quiz =
           , answer = TrueFalse True
           , explanation = "Yellow after green means stop. Drivers still approaching the junction must stop, and only those already too close to stop safely carry on."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "በብረት ንጥረ ነገሮች ላይ የሚነሳን እሳት ለማጥፋት የሚያገለግለው የእሳት ማጥፊያ መሣሪያ፤", en = "What is used to put out fires involving metals?" }
           , figure = Nothing
           , answer =
@@ -544,7 +544,7 @@ quiz =
           , answer = TrueFalse False
           , explanation = "The answer key marks this false, so that is not the definition of a second-class highway."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "የተበላሸን ተሽከርካሪ በመንገድ ላይ ለማቆም ከፊትና ከኋላ በ20ሜ ክልል አንፀባራቂ ምልክት ማስቀመጥ አለብን።", en = "When stopping a broken-down vehicle on the road, reflective warning signs must be placed within 20 m in front and behind." }
           , figure = Nothing
           , answer = TrueFalse False
@@ -701,7 +701,7 @@ quiz =
           , answer = TrueFalse True
           , explanation = "On a motorcycle most of the stopping power comes from the front brake, because the weight shifts forward under braking."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "ከአደጋ ውጤት ውስጥ የማይካተተው፤", en = "Which is NOT a consequence of accidents?" }
           , figure = Nothing
           , answer =
@@ -921,7 +921,7 @@ quiz =
                     }
           , explanation = "Following a mental driving plan that protects people and property is the opposite of aggressive driving."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "አሽከርካሪዎች ለተባባሰ አደጋ እንዳይጋለጡ ከሚያስፈልጉ የግል መጠበቂያ መሣሪያዎች ውስጥ አንዱ የሆነው፤", en = "Which is one of the personal protective items drivers need so they aren't exposed to further danger?" }
           , figure = Nothing
           , answer =
@@ -1215,7 +1215,7 @@ quiz =
           , answer = TrueFalse False
           , explanation = "Air-cooled engines are cooled by air flowing over fins. A radiator belongs to a liquid-cooled engine."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "ከሚከተሉት ውስጥ እሳት እንዲባባስ ምክንያት የማይሆነው፤", en = "Which does NOT make a fire worse?" }
           , figure = Nothing
           , answer =

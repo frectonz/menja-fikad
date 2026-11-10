@@ -440,7 +440,7 @@ quiz =
                     }
           , explanation = "Weight over the front wheels gives them more grip. Speed, worn tread and loading only at the rear all make the front wheels skid."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "ኢነርሺያ የሚያመጣውን ወደፊት የመወርወር እና ከመሪ ጋር የመጋጨት አደጋን ለመከላከል፤", en = "To prevent being thrown forward into the steering wheel by inertia:" }
           , figure = Nothing
           , answer =
@@ -925,7 +925,7 @@ quiz =
                     }
           , explanation = "Periodic maintenance is carried out on schedule before parts fail, which extends the vehicle's life."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "ከፈሳሽ ነገሮች የሚነሳ እሳት የ ------ ክፍል እሳት ይባላል።", en = "A fire from liquids is called a Class ___ fire." }
           , figure = Nothing
           , answer =
@@ -1174,7 +1174,7 @@ quiz =
           , answer = TrueFalse False
           , explanation = "Let the engine warm up at idle. Revving a cold engine wears it."
           }
-        , { topic = FireSafety
+        , { topic = Safety
           , prompt = { am = "የ\"ሐ\" ክፍልን ወይም ሶስተኛ ደረጃ እሳትን ለማጥፋት ፎም መጠቀም ይገባል።", en = "Foam should be used to put out a Class ሐ (third-class) fire." }
           , figure = Nothing
           , answer = TrueFalse False

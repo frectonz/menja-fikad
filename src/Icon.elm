@@ -120,5 +120,5 @@ topic which =
             FirstAid ->
                 [ box 3 6 18 15 2, line "M9 6V3.5h6V6", line "M12 10v7M8.5 13.5h7" ]
 
-            FireSafety ->
-                [ line "M12 3c1 3.5 5 5.5 5 10.5a5 5 0 0 1-10 0c0-2 .8-3.2 2-4.2 0 2 .8 3.2 2 3.2 .3-3-1-5.5 1-9.5z" ]
+            Safety ->
+                [ line "M8.5 3h7L21 8.5v7L15.5 21h-7L3 15.5v-7z", line "M12 8v5", dot 12 16.5 1.1 ]

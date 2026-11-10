@@ -43,7 +43,7 @@ type Topic
     | Vehicle
     | DriverBehavior
     | FirstAid
-    | FireSafety
+    | Safety
 
 
 questions : Quiz -> List Question
@@ -86,7 +86,7 @@ topics =
     , Vehicle
     , DriverBehavior
     , FirstAid
-    , FireSafety
+    , Safety
     ]
 
 
@@ -128,5 +128,5 @@ topicTitle topic =
         FirstAid ->
             { am = "የመጀመሪያ እርዳታ", en = "First aid" }
 
-        FireSafety ->
-            { am = "የእሳት መከላከል", en = "Fire safety" }
+        Safety ->
+            { am = "ደህንነት", en = "Safety" }
