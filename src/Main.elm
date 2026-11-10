@@ -1,17 +1,22 @@
 port module Main exposing (main)
 
 import Browser
+import Browser.Events
 import Html exposing (Html, aside, button, details, div, h1, h2, h3, header, img, li, main_, p, section, span, summary, text, ul)
-import Html.Attributes exposing (alt, class, classList, disabled, src, style, title)
+import Html.Attributes exposing (alt, class, classList, disabled, src, title)
 import Html.Events exposing (onClick)
 import Html.Keyed
 import Icon
 import Json.Decode as D
 import Json.Encode as E
-import Quiz exposing (Question, Quiz, Text, Topic)
+import Quiz exposing (Question, Quiz, Topic)
 import Quizzes
+import Random
 import Task
 import Time
+import Trip exposing (Tour(..))
+import Trip.View
+import Ui exposing (blueBar, blueButton, container, formatDuration, greenButton, percent, plainButton, redButton, shell, thickBar, tile, topicBar, viewPrompt, viewRoad, viewVerdict)
 import Zipper exposing (Zipper)
 
 
@@ -21,13 +26,14 @@ port save : E.Value -> Cmd msg
 port playSound : String -> Cmd msg
 
 
-{-| Either we are in the lobby looking at every desk, or we are seated at
-exactly one of them. A seat owns its quiz, so it can never point at a quiz
-that does not exist.
+{-| We are in the lobby looking at every desk, seated at exactly one of them,
+or out on the long drive. A seat owns its quiz, so it can never point at a
+quiz that does not exist.
 -}
 type Model
-    = Lobby (List Desk)
-    | Seated Seat
+    = Lobby (Maybe Tour) (List Desk)
+    | Seated (Maybe Tour) Seat
+    | Touring (List Desk) Tour
 
 
 type alias Desk =
@@ -99,6 +105,10 @@ type Msg
     | Retry
     | ReviewAt Int
     | BackToSummary
+    | Depart
+    | Departed Tour
+    | Resume
+    | Onward
 
 
 main : Program D.Value Model Msg
@@ -147,7 +157,7 @@ emptySlot question =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model of
-        Seated seat ->
+        Seated _ seat ->
             case seat.activity of
                 Answering sitting _ ->
                     if unansweredCount sitting.slots == 0 then
@@ -159,8 +169,48 @@ subscriptions model =
                 _ ->
                     Sub.none
 
-        Lobby _ ->
+        Touring _ (Stopped _) ->
+            Browser.Events.onKeyDown keyDecoder
+
+        Touring _ (Rolling trip) ->
+            Sub.batch
+                [ Browser.Events.onKeyDown keyDecoder
+                , if trip.picked == Nothing then
+                    Time.every 1000 Tick
+
+                  else
+                    Sub.none
+                ]
+
+        _ ->
             Sub.none
+
+
+{-| Keys held with a modifier belong to the browser, like switching tabs.
+-}
+keyDecoder : D.Decoder Msg
+keyDecoder =
+    D.map4
+        (\meta ctrl alt key ->
+            case ( meta || ctrl || alt, String.toInt key ) of
+                ( False, Just number ) ->
+                    D.succeed (Pick (number - 1))
+
+                ( False, Nothing ) ->
+                    if key == "Enter" || key == " " then
+                        D.succeed Onward
+
+                    else
+                        D.fail "not a shortcut"
+
+                ( True, _ ) ->
+                    D.fail "modified"
+        )
+        (D.field "metaKey" D.bool)
+        (D.field "ctrlKey" D.bool)
+        (D.field "altKey" D.bool)
+        (D.field "key" D.string)
+        |> D.andThen identity
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -173,11 +223,15 @@ update msg model =
     , Cmd.batch
         [ save (encode next)
         , Maybe.withDefault Cmd.none (Maybe.map playSound (soundFor model next))
-        , if msg == EndNow then
-            Task.perform Ended Time.now
+        , case msg of
+            EndNow ->
+                Task.perform Ended Time.now
 
-          else
-            Cmd.none
+            Depart ->
+                Random.generate Departed Trip.depart
+
+            _ ->
+                Cmd.none
         ]
     )
 
@@ -185,7 +239,26 @@ update msg model =
 soundFor : Model -> Model -> Maybe String
 soundFor before after =
     case ( before, after ) of
-        ( Seated was, Seated now ) ->
+        ( Touring _ (Rolling was), Touring _ (Rolling now) ) ->
+            if now.tally.answers > was.tally.answers then
+                Just
+                    (if now.tally.streak > 0 then
+                        "correct"
+
+                     else
+                        "wrong"
+                    )
+
+            else
+                Nothing
+
+        ( Touring _ (Rolling _), Touring _ (Stopped _) ) ->
+            Just "town"
+
+        ( Touring _ (Rolling _), Touring _ (Arrived _) ) ->
+            Just "passed"
+
+        ( Seated _ was, Seated _ now ) ->
             case ( was.activity, now.activity ) of
                 ( Answering old _, Answering new _ ) ->
                     if answeredCount new.slots > answeredCount old.slots then
@@ -219,33 +292,54 @@ soundFor before after =
 step : Msg -> Model -> Model
 step msg model =
     case ( msg, model ) of
-        ( Open index intent, Lobby all ) ->
-            open index intent all
+        ( Open index intent, Lobby tour all ) ->
+            open tour index intent all
 
-        ( Leave, Seated _ ) ->
-            Lobby (desks model)
+        ( Leave, Seated tour _ ) ->
+            Lobby tour (desks model)
 
-        ( Retry, Seated seat ) ->
+        ( Leave, Touring all tour ) ->
+            Lobby (Just tour) all
+
+        ( Resume, Lobby (Just tour) all ) ->
+            Touring all tour
+
+        ( Departed tour, _ ) ->
+            Touring (desks model) tour
+
+        ( Pick option, Touring all (Rolling trip) ) ->
+            Touring all (Rolling (Trip.answer option trip))
+
+        ( Onward, Touring all (Rolling trip) ) ->
+            Touring all (Trip.advance trip)
+
+        ( Onward, Touring all (Stopped trip) ) ->
+            Touring all (Rolling trip)
+
+        ( Tick _, Touring all (Rolling trip) ) ->
+            Touring all (Rolling (Trip.tick trip))
+
+        ( Retry, Seated tour seat ) ->
             case seat.activity of
                 Answering _ _ ->
                     model
 
                 Summary record ->
-                    retry record seat
+                    retry tour record seat
 
                 Review record ->
-                    retry record seat
+                    retry tour record seat
 
-        ( _, Seated seat ) ->
-            Seated { seat | activity = stepActivity msg seat.quiz seat.activity }
+        ( _, Seated tour seat ) ->
+            Seated tour { seat | activity = stepActivity msg seat.quiz seat.activity }
 
         _ ->
             model
 
 
-retry : Record -> Seat -> Model
-retry record seat =
-    Seated { seat | history = record :: seat.history, activity = Answering (newSitting seat.quiz) NotAsked }
+retry : Maybe Tour -> Record -> Seat -> Model
+retry tour record seat =
+    Seated tour { seat | history = record :: seat.history, activity = Answering (newSitting seat.quiz) NotAsked }
 
 
 stepActivity : Msg -> Quiz -> Activity -> Activity
@@ -319,13 +413,13 @@ finish now sitting =
     }
 
 
-open : Int -> Intent -> List Desk -> Model
-open index intent all =
+open : Maybe Tour -> Int -> Intent -> List Desk -> Model
+open tour index intent all =
     case ( index >= 0, List.drop index all ) of
         ( True, desk :: after ) ->
             let
                 seat history activity =
-                    Seated
+                    Seated tour
                         { before = List.take index all
                         , quiz = desk.quiz
                         , history = history
@@ -341,22 +435,25 @@ open index intent all =
                     seat earlier (Summary latest)
 
                 ( ViewLast, _, _ ) ->
-                    Lobby all
+                    Lobby tour all
 
                 _ ->
                     seat desk.history (Answering (newSitting desk.quiz) NotAsked)
 
         _ ->
-            Lobby all
+            Lobby tour all
 
 
 desks : Model -> List Desk
 desks model =
     case model of
-        Lobby all ->
+        Lobby _ all ->
             all
 
-        Seated seat ->
+        Touring all _ ->
+            all
+
+        Seated _ seat ->
             seat.before
                 ++ (case seat.activity of
                         Answering sitting _ ->
@@ -394,15 +491,6 @@ unansweredCount slots =
 passed : Int -> Int -> Bool
 passed correct total =
     correct * 100 > total * 74
-
-
-percent : Int -> Int -> Int
-percent part total =
-    if total == 0 then
-        0
-
-    else
-        part * 100 // total
 
 
 recordPercent : Record -> Int
@@ -473,28 +561,19 @@ formatTime seconds =
         ++ pad (modBy 60 seconds)
 
 
-formatDuration : Int -> String
-formatDuration seconds =
-    if seconds >= 3600 then
-        String.fromInt (seconds // 3600) ++ "h " ++ String.fromInt (modBy 60 (seconds // 60)) ++ "m"
-
-    else if seconds >= 60 then
-        String.fromInt (seconds // 60) ++ "m " ++ String.fromInt (modBy 60 seconds) ++ "s"
-
-    else
-        String.fromInt seconds ++ "s"
-
-
 encode : Model -> E.Value
 encode model =
     E.object
         [ ( "screen"
           , E.list E.string <|
                 case model of
-                    Lobby _ ->
+                    Lobby _ _ ->
                         [ "lobby" ]
 
-                    Seated seat ->
+                    Touring _ _ ->
+                        [ "trip" ]
+
+                    Seated _ seat ->
                         case seat.activity of
                             Answering _ _ ->
                                 [ "answering", seat.quiz.id ]
@@ -507,6 +586,17 @@ encode model =
           )
         , ( "quizzes"
           , E.object (List.map (\desk -> ( desk.quiz.id, encodeDesk desk )) (desks model))
+          )
+        , ( "trip"
+          , case model of
+                Lobby tour _ ->
+                    Maybe.withDefault E.null (Maybe.map Trip.encode tour)
+
+                Seated tour _ ->
+                    Maybe.withDefault E.null (Maybe.map Trip.encode tour)
+
+                Touring _ tour ->
+                    Trip.encode tour
           )
         ]
 
@@ -558,6 +648,9 @@ restore flags =
                 )
                 catalog
 
+        tour =
+            Result.toMaybe (D.decodeValue (D.field "trip" Trip.decoder) flags)
+
         indexOf id =
             List.indexedMap Tuple.pair all
                 |> List.filter (\( _, desk ) -> desk.quiz.id == id)
@@ -567,26 +660,29 @@ restore flags =
     in
     case D.decodeValue (D.field "screen" (D.list D.string)) flags of
         Ok [ "answering", id ] ->
-            open (indexOf id) Continue all
+            open tour (indexOf id) Continue all
 
         Ok [ "summary", id ] ->
-            open (indexOf id) ViewLast all
+            open tour (indexOf id) ViewLast all
 
         Ok [ "review", id ] ->
-            case open (indexOf id) ViewLast all of
-                Seated seat ->
+            case open tour (indexOf id) ViewLast all of
+                Seated _ seat ->
                     case seat.activity of
                         Summary record ->
-                            Seated { seat | activity = Review record }
+                            Seated tour { seat | activity = Review record }
 
                         _ ->
-                            Seated seat
+                            Seated tour seat
 
-                lobby ->
-                    lobby
+                other ->
+                    other
+
+        Ok [ "trip" ] ->
+            Maybe.withDefault (Lobby Nothing all) (Maybe.map (Touring all) tour)
 
         _ ->
-            Lobby all
+            Lobby tour all
 
 
 deskDecoder : Quiz -> D.Decoder Desk
@@ -637,10 +733,13 @@ slotsDecoder quiz =
 view : Model -> Html Msg
 view model =
     case model of
-        Lobby all ->
-            viewLobby all
+        Lobby tour all ->
+            viewLobby tour all
 
-        Seated seat ->
+        Touring _ tour ->
+            Trip.View.view tripEvents tour
+
+        Seated _ seat ->
             case seat.activity of
                 Answering sitting prompt ->
                     viewExam seat.quiz (Taking sitting prompt)
@@ -652,68 +751,13 @@ view model =
                     viewSummary seat.quiz record seat.history
 
 
-shell : String -> List (Html Msg) -> Html Msg
-shell extra children =
-    div [ class ("flex min-h-dvh flex-col bg-ground text-ink " ++ extra) ] children
+tripEvents : Trip.View.Events Msg
+tripEvents =
+    { leave = Leave, depart = Depart, resume = Resume, onward = Onward, pick = Pick }
 
 
-blueBar : List (Html Msg) -> Html Msg
-blueBar extras =
-    header [ class "sticky top-0 z-10 bg-plate text-white" ]
-        [ div [ class (container ++ " flex items-center justify-between gap-4 py-2.5") ]
-            (button
-                [ class "cursor-pointer whitespace-nowrap rounded-lg border-2 border-white px-3 py-0.5 text-xl font-black hover:bg-white hover:text-plate"
-                , onClick Leave
-                ]
-                [ text "መንጃ ፈቃድ" ]
-                :: extras
-            )
-        ]
-
-
-container : String
-container =
-    "mx-auto w-full max-w-7xl px-4 sm:px-8"
-
-
-tile : String
-tile =
-    "rounded-2xl border-2 border-b-4 border-edge bg-white"
-
-
-buttonBase : String
-buttonBase =
-    "cursor-pointer rounded-2xl border-2 border-b-4 px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide active:translate-y-0.5 active:border-b-2 "
-
-
-greenButton : String
-greenButton =
-    buttonBase ++ "border-leaf-dark bg-leaf text-white hover:brightness-105"
-
-
-redButton : String
-redButton =
-    buttonBase ++ "border-cherry-dark bg-cherry text-white hover:brightness-105"
-
-
-blueButton : String
-blueButton =
-    buttonBase ++ "border-plate-dark bg-plate text-white hover:brightness-105"
-
-
-plainButton : String
-plainButton =
-    buttonBase ++ "border-edge bg-white text-plate hover:bg-snow disabled:cursor-not-allowed disabled:text-edge disabled:hover:bg-white"
-
-
-thickBar : String -> Int -> Html msg
-thickBar color value =
-    div [ class "h-3 w-full overflow-hidden rounded-full bg-edge" ]
-        [ div [ class ("h-full rounded-full " ++ color), style "width" (String.fromInt value ++ "%") ] [] ]
-
-
-viewLobby : List Desk -> Html Msg
-viewLobby all =
+viewLobby : Maybe Tour -> List Desk -> Html Msg
+viewLobby tour all =
     let
         records =
             List.concatMap .history all
@@ -740,7 +784,7 @@ viewLobby all =
             List.drop (List.length Quizzes.all) indexed
     in
     shell ""
-        [ blueBar
+        [ blueBar Leave
             [ if List.isEmpty attempted then
                 text ""
 
@@ -755,6 +799,7 @@ viewLobby all =
             [ h1 [ class "text-3xl font-black leading-tight sm:text-4xl" ] [ text "የመንጃ ፈቃድ የጽሑፍ ፈተና ልምምድ" ]
             , p [ class "mt-2 max-w-2xl text-lg text-mute" ]
                 [ text "Practise the written driving test against the clock. You pass with more than 74%." ]
+            , Trip.View.lobbyTile tripEvents tour
             , h2 [ class "mt-8 text-xl font-extrabold" ] [ text "Full quizzes" ]
             , div [ class "mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3" ]
                 (List.map
@@ -904,41 +949,16 @@ viewExam quiz exam =
                 ]
             , case exam of
                 Taking sitting _ ->
-                    viewRoad (percent (answeredCount slots) total) (Just (percent sitting.elapsed (quiz.minutes * 60)))
+                    viewRoad [] (percent (answeredCount slots) total) (Just (percent sitting.elapsed (quiz.minutes * 60)))
 
                 Looking _ ->
-                    viewRoad (percent (Zipper.position slots + 1) total) Nothing
+                    viewRoad [] (percent (Zipper.position slots + 1) total) Nothing
             ]
         , main_ [ class (container ++ " grid flex-1 content-start items-start gap-4 py-4 lg:min-h-0 lg:content-stretch lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-stretch") ]
             [ viewQuestion exam slots
             , viewNavigator exam slots
             ]
         , viewFooter exam slots
-        ]
-
-
-viewRoad : Int -> Maybe Int -> Html msg
-viewRoad you clockAt =
-    div [ class "relative h-5 bg-road" ]
-        [ div [ class "absolute inset-y-0 left-0 bg-white/25", style "width" (String.fromInt you ++ "%") ] []
-        , div [ class "road-dashes absolute inset-0" ] []
-        , case clockAt of
-            Just at ->
-                div
-                    [ class "absolute inset-y-0 w-1.5 -translate-x-1/2 bg-sun"
-                    , style "left" (String.fromInt at ++ "%")
-                    , title "Where the clock is. Keep the green stretch ahead of it."
-                    ]
-                    []
-
-            Nothing ->
-                text ""
-        , div
-            [ class "absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-plate"
-            , style "left" (String.fromInt you ++ "%")
-            , title "How far you have got"
-            ]
-            []
         ]
 
 
@@ -987,85 +1007,11 @@ isRevealed exam slot =
 
 viewQuestion : Exam -> Zipper Slot -> Html Msg
 viewQuestion exam slots =
-    let
-        slot =
-            slots.focus
-
-        answers =
-            div [ class "grid content-start gap-2" ]
-                (List.indexedMap (viewOption slot (isRevealed exam slot)) (Quiz.options slot.question))
-    in
-    section [ class "rounded-2xl border-2 border-edge bg-white p-4 sm:p-6 lg:min-h-0 lg:overflow-y-auto" ]
-        [ div []
-            [ p [ class "flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-bold text-mute" ]
-                [ text ("Question " ++ String.fromInt (Zipper.position slots + 1) ++ " of " ++ String.fromInt (Zipper.length slots))
-                , span [ class "inline-flex items-center gap-1.5" ] [ Icon.topic slot.question.topic "size-4", text (Quiz.topicLabel slot.question.topic) ]
-                ]
-            , h2 [ class "mt-2 text-2xl font-extrabold leading-snug" ] [ text slot.question.prompt.am ]
-            , p [ class "mt-1 text-mute" ] [ text slot.question.prompt.en ]
-            , case slot.question.figure of
-                Just path ->
-                    div [ class "mt-4 grid gap-5 md:grid-cols-[14rem_minmax(0,1fr)]" ]
-                        [ img [ src path, alt "Road sign", class "mx-auto h-36 w-auto max-w-full object-contain md:mt-2 md:h-48" ] []
-                        , answers
-                        ]
-
-                Nothing ->
-                    div [ class "mt-4" ] [ answers ]
-            ]
-        ]
-
-
-optionKey : Int -> String
-optionKey index =
-    List.drop index [ "ሀ", "ለ", "ሐ", "መ", "ሠ" ] |> List.head |> Maybe.withDefault ""
-
-
-viewOption : Slot -> Bool -> Int -> Text -> Html Msg
-viewOption slot revealed index option =
-    let
-        isAnswer =
-            revealed && index == Quiz.correctIndex slot.question
-
-        isWrongPick =
-            revealed && slot.picked == Just index && not isAnswer
-
-        isRest =
-            revealed && not isAnswer && not isWrongPick
-    in
-    button
-        [ class "flex w-full items-center gap-3 rounded-xl border-2 border-b-4 px-3 py-2 text-left"
-        , classList
-            [ ( "cursor-pointer border-edge bg-white hover:bg-snow active:translate-y-0.5 active:border-b-2", not revealed )
-            , ( "border-leaf bg-mint text-leaf-dark", isAnswer )
-            , ( "border-cherry bg-blush text-cherry-dark", isWrongPick )
-            , ( "border-edge bg-white text-mute", isRest )
-            ]
-        , disabled revealed
-        , onClick (Pick index)
-        ]
-        [ span
-            [ class "grid size-8 shrink-0 place-items-center rounded-lg border-2 font-extrabold"
-            , classList
-                [ ( "border-edge text-mute", not isAnswer && not isWrongPick )
-                , ( "border-leaf bg-leaf text-white", isAnswer )
-                , ( "border-cherry bg-cherry text-white", isWrongPick )
-                ]
-            ]
-            [ if isAnswer then
-                Icon.check "size-5"
-
-              else if isWrongPick then
-                Icon.cross "size-5"
-
-              else
-                text (optionKey index)
-            ]
-        , span [ class "min-w-0" ]
-            [ span [ class "block font-bold leading-snug" ] [ text option.am ]
-            , span [ class "block text-sm leading-snug", classList [ ( "text-mute", not isAnswer && not isWrongPick ) ] ] [ text option.en ]
-            ]
-        ]
+    viewPrompt Pick
+        ("Question " ++ String.fromInt (Zipper.position slots + 1) ++ " of " ++ String.fromInt (Zipper.length slots))
+        slots.focus.question
+        slots.focus.picked
+        (isRevealed exam slots.focus)
 
 
 viewFooter : Exam -> Zipper Slot -> Html Msg
@@ -1102,34 +1048,7 @@ viewFooter exam slots =
                     ]
     in
     if isRevealed exam slot then
-        div [ class "sticky bottom-0", classList [ ( "bg-mint text-leaf-dark", correct ), ( "bg-blush text-cherry-dark", not correct ) ] ]
-            [ div [ class (container ++ " flex flex-wrap items-center gap-x-6 gap-y-3 py-3 sm:flex-nowrap") ]
-                [ span [ class "hidden size-14 shrink-0 place-items-center rounded-full bg-white text-3xl font-black sm:grid" ]
-                    [ if correct then
-                        Icon.check "size-8"
-
-                      else
-                        Icon.cross "size-8"
-                    ]
-                , div [ class "min-w-0 flex-1 basis-full sm:basis-0" ]
-                    [ p [ class "text-lg font-extrabold leading-tight sm:text-xl" ]
-                        [ text
-                            (if correct then
-                                "ትክክል! Correct"
-
-                             else if slot.picked == Nothing then
-                                "Not answered. The answer is " ++ optionKey (Quiz.correctIndex slot.question)
-
-                             else
-                                "ስህተት! The answer is " ++ optionKey (Quiz.correctIndex slot.question)
-                            )
-                        ]
-                    , p [ class "mt-0.5 max-w-prose text-sm font-semibold leading-snug sm:text-base" ] [ text slot.question.explanation ]
-                    ]
-                , div [ class "flex shrink-0 gap-2" ]
-                    (button [ class plainButton, disabled (index == 0), onClick (Goto (index - 1)) ] [ text "Back" ] :: moveOn)
-                ]
-            ]
+        viewVerdict slot.question slot.picked "" (button [ class plainButton, disabled (index == 0), onClick (Goto (index - 1)) ] [ text "Back" ] :: moveOn)
 
     else
         div [ class "sticky bottom-0 border-t-2 border-edge bg-white" ]
@@ -1278,7 +1197,7 @@ viewSummary quiz record earlier =
                 ]
     in
     shell ""
-        [ blueBar []
+        [ blueBar Leave []
         , main_ [ class (container ++ " py-8") ]
             [ div [ class "mx-auto max-w-2xl text-center" ]
                 [ div
@@ -1369,22 +1288,16 @@ viewTopic all topic =
         count =
             List.length inTopic
     in
-    li []
-        [ p [ class "flex justify-between font-bold" ]
-            [ span [ class "flex items-center gap-2" ] [ Icon.topic topic "size-5 text-plate", text (Quiz.topicLabel topic) ]
-            , span [ class "tabular-nums text-mute" ] [ text (String.fromInt right ++ " of " ++ String.fromInt count) ]
-            ]
-        , div [ class "mt-1" ]
-            [ thickBar
-                (if passed right count then
-                    "bg-leaf"
+    topicBar
+        (if passed right count then
+            "bg-leaf"
 
-                 else
-                    "bg-cherry"
-                )
-                (percent right count)
-            ]
-        ]
+         else
+            "bg-cherry"
+        )
+        topic
+        right
+        count
 
 
 viewSlotLink : ( Int, Slot ) -> Html Msg

@@ -18,6 +18,7 @@ const sounds: Record<string, { wave: OscillatorType; notes: Note[] }> = {
   correct: { wave: "sine", notes: [[660, 0, 0.12], [990, 0.1, 0.22]] },
   wrong: { wave: "triangle", notes: [[233, 0, 0.16], [175, 0.14, 0.3]] },
   passed: { wave: "sine", notes: [[523, 0, 0.14], [659, 0.12, 0.14], [784, 0.24, 0.14], [1047, 0.36, 0.45]] },
+  town: { wave: "sine", notes: [[784, 0, 0.1], [784, 0.12, 0.1], [1047, 0.24, 0.35]] },
   failed: { wave: "triangle", notes: [[392, 0, 0.2], [330, 0.2, 0.2], [262, 0.4, 0.5]] },
 };
 
