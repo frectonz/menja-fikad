@@ -1,4 +1,4 @@
-module Trip exposing (Card, Tally, Tour(..), Trip, advance, answer, comeback, decoder, depart, encode, gear, lastStop, nextStop, stops, tick, total)
+module Trip exposing (Card, Tally, Tour(..), Trip, advance, answer, comeback, decoder, depart, encode, gear, lastStop, nextStop, redrive, stops, tick, total)
 
 import Array exposing (Array)
 import Json.Decode as D
@@ -63,9 +63,26 @@ total =
 
 depart : Random.Generator Tour
 depart =
+    setOff [] (List.indexedMap (\id question -> Card id question 0 0) (Array.toList deck))
+
+
+{-| A new trip over only the questions that were missed on the one just
+finished; the rest stay learned.
+-}
+redrive : Tally -> Random.Generator Tour
+redrive tally =
+    let
+        ( clean, missed ) =
+            List.partition (\card -> card.misses == 0) tally.learned
+    in
+    setOff clean (List.map (\card -> { card | misses = 0, wins = 0 }) missed)
+
+
+setOff : List Card -> List Card -> Random.Generator Tour
+setOff learned cards =
     let
         tally =
-            { learned = [], answers = 0, streak = 0, best = 0, seconds = 0 }
+            { learned = learned, answers = 0, streak = 0, best = 0, seconds = 0 }
 
         start order =
             case List.map Tuple.second (List.sortBy Tuple.first order) of
@@ -75,8 +92,8 @@ depart =
                 [] ->
                     Arrived tally
     in
-    Random.list total (Random.float 0 1)
-        |> Random.map (\keys -> start (List.map2 Tuple.pair keys (List.indexedMap (\id question -> Card id question 0 0) (Array.toList deck))))
+    Random.list (List.length cards) (Random.float 0 1)
+        |> Random.map (\keys -> start (List.map2 Tuple.pair keys cards))
 
 
 answer : Int -> Trip -> Trip

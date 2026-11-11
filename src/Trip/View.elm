@@ -1,7 +1,7 @@
 module Trip.View exposing (Events, lobbyTile, view)
 
-import Html exposing (Html, button, div, h1, h2, header, img, li, main_, p, section, span, text, ul)
-import Html.Attributes exposing (alt, class, classList, src, style, title)
+import Html exposing (Html, button, div, h1, h2, header, main_, p, section, span, text, ul)
+import Html.Attributes exposing (class, classList, style, title)
 import Html.Events exposing (onClick)
 import Icon
 import Quiz
@@ -13,6 +13,7 @@ import Ui exposing (blueBar, blueButton, buttonBase, container, formatDuration, 
 type alias Events msg =
     { leave : msg
     , depart : msg
+    , redrive : msg
     , resume : msg
     , onward : msg
     , pick : Int -> msg
@@ -209,7 +210,7 @@ viewStop on trip =
             Trip.lastStop learned
     in
     viewStatus on
-        { seen = trip.tally.learned ++ List.map .card trip.waiting
+        { extra = text ""
         , tally = trip.tally
         , heading = "እንኳን ወደ " ++ town.am ++ " በደህና መጡ!"
         , story =
@@ -238,26 +239,43 @@ viewStop on trip =
 
 viewArrival : Events msg -> Trip.Tally -> Html msg
 viewArrival on tally =
+    let
+        missed =
+            List.length (List.filter (\card -> card.misses > 0) tally.learned)
+
+        ( headline, label ) =
+            if missed == 1 then
+                ( "1 question kept coming back", "Drive it again" )
+
+            else
+                ( String.fromInt missed ++ " questions kept coming back", "Drive the " ++ String.fromInt missed ++ " again" )
+    in
     viewStatus on
-        { seen = tally.learned
+        { extra =
+            if missed == 0 then
+                text ""
+
+            else
+                section [ class ("mt-4 flex flex-wrap items-center justify-between gap-4 p-5 " ++ tile) ]
+                    [ div []
+                        [ h2 [ class "text-xl font-extrabold" ] [ text headline ]
+                        , p [ class "font-bold text-mute" ] [ text "Drive just those again, one at a time, until they stick." ]
+                        ]
+                    , button [ class blueButton, onClick on.redrive ] [ text label ]
+                    ]
         , tally = tally
         , heading = "ድሬዳዋ ደርሰዋል!"
         , story = "You have answered every one of the " ++ String.fromInt (List.length tally.learned) ++ " questions correctly."
         , buttons =
-            [ button [ class blueButton, onClick on.depart ] [ text "Drive again" ]
+            [ button [ class plainButton, onClick on.depart ] [ text "Start over" ]
             , button [ class plainButton, onClick on.leave ] [ text "All quizzes" ]
             ]
         }
 
 
-viewStatus : Events msg -> { seen : List Trip.Card, tally : Trip.Tally, heading : String, story : String, buttons : List (Html msg) } -> Html msg
-viewStatus on { seen, tally, heading, story, buttons } =
+viewStatus : Events msg -> { extra : Html msg, tally : Trip.Tally, heading : String, story : String, buttons : List (Html msg) } -> Html msg
+viewStatus on { extra, tally, heading, story, buttons } =
     let
-        toughest =
-            List.filter (\card -> card.misses > 0) seen
-                |> List.sortBy (\card -> negate card.misses)
-                |> List.take 20
-
         box color textColor label value =
             div [ class ("rounded-2xl p-1 " ++ color) ]
                 [ p [ class "py-1 text-center text-xs font-extrabold uppercase tracking-wide text-white" ] [ text label ]
@@ -269,28 +287,6 @@ viewStatus on { seen, tally, heading, story, buttons } =
                 topic
                 (List.length (List.filter (\card -> card.question.topic == topic) tally.learned))
                 (List.length (List.filter (\question -> question.topic == topic) (List.concatMap Quiz.questions Quizzes.all)))
-
-        tough card =
-            li [ class "flex items-start gap-3 py-2" ]
-                [ span [ class "grid size-9 shrink-0 place-items-center rounded-lg bg-cherry text-sm font-extrabold text-white" ]
-                    [ text (String.fromInt card.misses) ]
-                , case card.question.figure of
-                    Just path ->
-                        img [ src path, alt "", class "size-10 shrink-0 object-contain" ] []
-
-                    Nothing ->
-                        text ""
-                , span [ class "min-w-0 flex-1" ]
-                    [ span [ class "block font-bold leading-snug" ] [ text card.question.prompt.am ]
-                    , span [ class "block text-sm leading-snug text-mute" ] [ text card.question.prompt.en ]
-                    , case List.head (List.drop (Quiz.correctIndex card.question) (Quiz.options card.question)) of
-                        Just option ->
-                            span [ class "mt-0.5 block text-sm font-bold leading-snug text-leaf-dark" ] [ text (option.am ++ " " ++ option.en) ]
-
-                        Nothing ->
-                            text ""
-                    ]
-                ]
     in
     shell ""
         [ blueBar on.leave []
@@ -309,20 +305,10 @@ viewStatus on { seen, tally, heading, story, buttons } =
                     ]
                 , div [ class "mt-6 flex flex-wrap justify-center gap-3" ] buttons
                 ]
-            , div [ class "mt-10 grid items-start gap-4 lg:grid-cols-2" ]
-                [ section [ class ("p-5 " ++ tile) ]
-                    [ h2 [ class "text-xl font-extrabold" ] [ text "Learned by topic" ]
-                    , ul [ class "mt-4 grid gap-3" ] (List.map topicRow Quiz.topics)
-                    ]
-                , if List.isEmpty toughest then
-                    text ""
-
-                  else
-                    section [ class ("p-5 " ++ tile) ]
-                        [ h2 [ class "text-xl font-extrabold" ] [ text "The ones that kept coming back" ]
-                        , p [ class "text-sm font-bold text-mute" ] [ text "The number is how many times you missed it. The right answer is in green." ]
-                        , ul [ class "mt-2" ] (List.map tough toughest)
-                        ]
+            , section [ class ("mt-10 p-5 " ++ tile) ]
+                [ h2 [ class "text-xl font-extrabold" ] [ text "Learned by topic" ]
+                , ul [ class "mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3" ] (List.map topicRow Quiz.topics)
                 ]
+            , extra
             ]
         ]

@@ -106,6 +106,7 @@ type Msg
     | ReviewAt Int
     | BackToSummary
     | Depart
+    | Redrive
     | Departed Tour
     | Resume
     | Onward
@@ -229,6 +230,14 @@ update msg model =
 
             Depart ->
                 Random.generate Departed Trip.depart
+
+            Redrive ->
+                case model of
+                    Touring _ (Arrived tally) ->
+                        Random.generate Departed (Trip.redrive tally)
+
+                    _ ->
+                        Cmd.none
 
             _ ->
                 Cmd.none
@@ -753,7 +762,7 @@ view model =
 
 tripEvents : Trip.View.Events Msg
 tripEvents =
-    { leave = Leave, depart = Depart, resume = Resume, onward = Onward, pick = Pick }
+    { leave = Leave, depart = Depart, redrive = Redrive, resume = Resume, onward = Onward, pick = Pick }
 
 
 viewLobby : Maybe Tour -> List Desk -> Html Msg
