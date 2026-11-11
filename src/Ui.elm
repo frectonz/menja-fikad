@@ -90,7 +90,7 @@ formatDuration seconds =
 
 viewRoad : List ( Int, String ) -> Int -> Maybe Int -> Html msg
 viewRoad towns you clockAt =
-    div [ class "relative h-5 bg-road" ]
+    div [ class "relative h-5 overflow-hidden bg-road" ]
         [ div [ class "absolute inset-y-0 left-0 bg-white/25", style "width" (String.fromInt you ++ "%") ] []
         , div [ class "road-dashes absolute inset-0" ] []
         , div []
