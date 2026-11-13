@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="28" fill="#20242a"/>
+  <rect x="94" y="184" width="12" height="16" fill="#4a5059"/>
+  <circle cx="68" cy="30" r="22" fill="#1e63c6" stroke="#fff" stroke-width="2"/>
+  <path d="M72 44V17M78 23L72 17L66 23M72 33H57M62 28L57 33L62 38" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="132" cy="30" r="22" fill="#1e63c6" stroke="#fff" stroke-width="2"/>
+  <path d="M127 43V30H142M136 24L142 30L136 36" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="40" y="56" width="56" height="132" rx="12" fill="#0d0f12" stroke="#4a5059" stroke-width="3"/>
+  <circle cx="68" cy="78" r="17" fill="#3a3f47"/>
+  <circle cx="68" cy="122" r="17" fill="#3a3f47"/>
+  <circle cx="68" cy="166" r="17" fill="#2ecc71"/>
+  <rect x="104" y="56" width="56" height="132" rx="12" fill="#0d0f12" stroke="#4a5059" stroke-width="3"/>
+  <circle cx="132" cy="78" r="17" fill="#e53935"/>
+  <circle cx="132" cy="122" r="17" fill="#3a3f47"/>
+  <circle cx="132" cy="166" r="17" fill="#3a3f47"/>
+</svg>

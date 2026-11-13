@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="88" fill="#fff" stroke="#c1121c" stroke-width="20"/>
+<path d="M30 100H58" stroke="#000" stroke-width="10"/><path d="M76 100L54 86V114Z" fill="#000"/>
+<path d="M170 100H142" stroke="#000" stroke-width="10"/><path d="M124 100L146 86V114Z" fill="#000"/>
+<text x="100" y="114" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="38" text-anchor="middle" fill="#000">3M</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 176">
+<path d="M100 10L190 166H10Z" fill="#c1121c" stroke="#c1121c" stroke-width="16" stroke-linejoin="round"/>
+<path d="M100 34L169.3 154H30.7Z" fill="#fff"/>
+<g fill="#000" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+<path d="M95 98V86L102 72H130L137 86V98Z"/>
+<rect x="97" y="96" width="9" height="10" rx="2"/><rect x="126" y="96" width="9" height="10" rx="2"/>
+<path d="M105 84L108 76H124L127 84Z" fill="#fff" stroke="none"/></g><g fill="#000" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+<path d="M81 118V106L88 92H116L123 106V118Z"/>
+<rect x="83" y="116" width="9" height="10" rx="2"/><rect x="112" y="116" width="9" height="10" rx="2"/>
+<path d="M91 104L94 96H110L113 104Z" fill="#fff" stroke="none"/></g><g fill="#000" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">
+<path d="M65 140V128L72 114H100L107 128V140Z"/>
+<rect x="67" y="138" width="9" height="10" rx="2"/><rect x="96" y="138" width="9" height="10" rx="2"/>
+<path d="M75 126L78 118H94L97 126Z" fill="#fff" stroke="none"/></g>
+</svg>

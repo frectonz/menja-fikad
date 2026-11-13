@@ -26,5 +26,10 @@ All images are from Wikimedia Commons.
 | priority-road.svg | [Italian traffic signs - diritto di precedenza.svg](https://commons.wikimedia.org/wiki/File:Italian_traffic_signs_-_diritto_di_precedenza.svg) | CC BY-SA 3.0 | F l a n k e r |
 | steep-descent.svg | [Italian traffic signs - discesa pericolosa.svg](https://commons.wikimedia.org/wiki/File:Italian_traffic_signs_-_discesa_pericolosa.svg) | Public domain | F l a n k e r |
 | sharp-bend-left.svg | [Italian traffic signs - delineatore di curva.svg](https://commons.wikimedia.org/wiki/File:Italian_traffic_signs_-_delineatore_di_curva.svg) | Public domain | F l a n k e r |
+| customs.svg | [Ethiopia road sign - Customs (OTA Version).svg](https://commons.wikimedia.org/wiki/File:Ethiopia_road_sign_-_Customs_(OTA_Version).svg) | Public domain | RemindaYaImKinda |
+| no-vehicles.svg | [Ethiopia road sign 2.01.svg](https://commons.wikimedia.org/wiki/File:Ethiopia_road_sign_2.01.svg) | Public domain | Government of Ethiopia |
+| slippery-road.svg | [Ethiopia road sign 1.22.svg](https://commons.wikimedia.org/wiki/File:Ethiopia_road_sign_1.22.svg) | Public domain | Bigguy637 |
+| no-parking-p.svg | [SADC road sign R216.svg](https://commons.wikimedia.org/wiki/File:SADC_road_sign_R216.svg) | Public domain | Southern African Development Community |
+| no-horn.svg | [Ethiopia road sign - No honking.svg](https://commons.wikimedia.org/wiki/File:Ethiopia_road_sign_-_No_honking.svg) | Public domain | RemindaYaImKinda |
 
-The dashboard warning symbols (`warning-check-engine.svg`, `warning-fog-light.svg`, `warning-abs.svg`) were drawn for this project.
+Every other image in this folder (dashboard symbols, traffic lights, hand signals, road markings and the remaining road signs) was drawn for this project.

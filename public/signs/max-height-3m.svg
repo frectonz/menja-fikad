@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="95" fill="#c1121c"/>
+<circle cx="100" cy="100" r="75" fill="#fff"/>
+<path d="M76 38H124L100 70Z"/><text x="100" y="116" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="40" text-anchor="middle" fill="#000">3 m</text><path d="M76 162H124L100 130Z"/>
+</svg>
